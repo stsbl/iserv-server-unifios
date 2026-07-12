@@ -1,0 +1,22 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#: config/80server-unifios
+msgid ""
+"Directory containing root-only YAML profile definitions for WLAN PSK "
+"rotation."
+msgstr ""
+"Verzeichnis mit ausschließlich für root zugänglichen YAML-"
+"Profildefinitionen für die Rotation von WLAN-PSKs."
+
+#: config/80server-unifios
+msgid "Module: UniFi OS Server"
+msgstr "Modul: UniFi OS Server"
+
+#: config/80server-unifios
+msgid "UniFi OS PSK profiles"
+msgstr "UniFi-OS-PSK-Profile"

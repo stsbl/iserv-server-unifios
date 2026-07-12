@@ -7,3 +7,5 @@ debian/stsbl-iserv-server-unifios/
 
 debian/*.postrm.debhelper
 debian/debhelper-build-stamp
+
+/Makefile.iservmake
