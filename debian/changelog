@@ -1,3 +1,9 @@
+stsbl-iserv-server-unifios (0.1.0-2) unstable; urgency=medium
+
+  * Generate Docker Compose environment through IConf.
+
+ -- Stadtteilschule Blankenese <repository@stsbl.de>  Sun, 12 Jul 2026 20:05:00 +0200
+
 stsbl-iserv-server-unifios (0.1.0-1) unstable; urgency=medium
 
   * Initial package.

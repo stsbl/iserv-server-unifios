@@ -21,7 +21,7 @@ Git submodule and installed at
 `/usr/share/iserv/server-unifios/docker/unifi-os-server/docker-compose.yaml`;
 it must not be copied to or edited in `/opt`.  Its generated environment is
 `/var/lib/iserv/server-unifios/docker-compose.env` and derives `HOST` from the
-IServ configuration.
+`Hostname` configuration supplied by `iserv-config-file`.
 
 The `iserv-server-unifios.service` systemd unit starts and stops the Compose
 stack.  Persistent container state deliberately remains outside the package:

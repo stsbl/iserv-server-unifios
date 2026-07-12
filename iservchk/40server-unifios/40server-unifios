@@ -12,14 +12,6 @@ MkDir 0750 root:root /etc/iserv/server-unifios/psk-profiles.d
 
 Touch /var/lib/iserv/server-unifios/docker-compose.env
 ChPerm 0600 root:root /var/lib/iserv/server-unifios/docker-compose.env
-
-Test "generate Docker Compose environment"
-  . /usr/lib/iserv/cfg
-  [ "$(cat /var/lib/iserv/server-unifios/docker-compose.env)" = "HOST=$Host" ]
-  ---
-  . /usr/lib/iserv/cfg
-  printf 'HOST=%s\n' "$Host" > /var/lib/iserv/server-unifios/docker-compose.env
-
 Check /var/lib/iserv/server-unifios/docker-compose.env
 
 Test "create PSK profile directories"
