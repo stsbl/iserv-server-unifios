@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -eu
 
 profile=${PROFILE_FILE:-/etc/iserv/server-unifios/ap-reboot.env}
@@ -13,9 +13,8 @@ base_url=${base_url:-https://$(hostname -f)}
 site=${site:-default}
 name_prefix=${name_prefix:-UAP-}
 api_url=$base_url/proxy/network/api/s/$site
-
 curl -fsS -k \
-  -H "X-API-KEY: $api_key" \
+  --config <(printf 'header = "X-API-KEY: %s"\n' "$api_key") \
   "$api_url/stat/device" |
   jq -r --arg prefix "$name_prefix" \
     '.data[] | select(.type == "uap" and (.name | startswith($prefix))) | [.name, .mac] | @tsv' |
@@ -23,7 +22,7 @@ curl -fsS -k \
     [ -n "$mac" ] || continue
     printf 'Requesting reboot for %s\n' "$name" >&2
     curl -fsS -k \
-      -H "X-API-KEY: $api_key" \
+      --config <(printf 'header = "X-API-KEY: %s"\n' "$api_key") \
       -H 'Content-Type: application/json' \
       -X POST \
       -d "{\"cmd\":\"restart\",\"mac\":\"$mac\"}" \

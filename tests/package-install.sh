@@ -9,6 +9,8 @@ dh_iservinstall -p"$package"
 
 test -f "$package_dir/usr/lib/iserv/server-unifios/rotate_wlan_psk"
 test -x "$package_dir/usr/lib/iserv/server-unifios/server-unifios-reboot-aps"
+grep -Fqx '#!/bin/bash' "$package_dir/usr/lib/iserv/server-unifios/server-unifios-reboot-aps"
+grep -Fq -- '--config <(printf' "$package_dir/usr/lib/iserv/server-unifios/server-unifios-reboot-aps"
 test -f "$package_dir/usr/share/doc/$package/examples/ap-reboot.env.example"
 test -f "$package_dir/usr/share/iserv/$package/template.html"
 test -f "$package_dir/usr/share/iserv/$package/style.css"
@@ -57,5 +59,8 @@ PATH="$tmp/bin:$PATH" PROFILE_FILE="$tmp/enabled.env" CURL_LOG="$tmp/curl.log" \
   "$package_dir/usr/lib/iserv/server-unifios/server-unifios-reboot-aps"
 grep -Fq 'aa:bb:cc:dd:ee:ff' "$tmp/curl.log"
 if grep -Fq '11:22:33:44:55:66' "$tmp/curl.log"; then
+  exit 1
+fi
+if grep -Fq 'test-api-key' "$tmp/curl.log"; then
   exit 1
 fi

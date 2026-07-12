@@ -13,6 +13,10 @@ start with `name_prefix`, and requests each reboot through
 `/proxy/network/api/s/<site>/cmd/devmgr`. It neither needs PHP/Composer nor an
 AP SSH key.
 
+The Bash runner passes the API-key header to `curl --config` through process
+substitution; the API key is therefore not present in a curl command line or a
+temporary file.
+
 An absent or disabled profile is a successful no-op. Failed controller
 requests fail the job. The profile supports `base_url` (default
 `https://$(hostname -f)`), `site` (default `default`), and `name_prefix`

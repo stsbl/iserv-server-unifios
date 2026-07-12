@@ -130,7 +130,8 @@ Useful local checks:
 ```sh
 sh -n cron/daily.d/server-unifios-update lib/server-unifios/server-unifios-rotate-psk
 bash -n lib/server-unifios/unifi-set-psk lib/server-unifios/rotate_wlan_psk
-sh -n cron/daily.d/server-unifios-reboot-aps lib/server-unifios/server-unifios-reboot-aps
+sh -n cron/daily.d/server-unifios-reboot-aps
+bash -n lib/server-unifios/server-unifios-reboot-aps
 HOST=unifi.example.invalid docker compose -f docker/docker-compose.yaml config
 dpkg-buildpackage -us -uc -b
 ```
