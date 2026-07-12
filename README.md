@@ -95,6 +95,28 @@ Run a rotation manually after changing a profile:
 PSK rotation is intentionally not part of the daily UniFi update job. Schedule
 this command separately if automatic rotation is wanted.
 
+## Access-point reboots
+
+The optional daily AP reboot job is disabled until configured. Copy the
+root-only example profile and add a UniFi controller API key with permission to
+restart devices:
+
+```sh
+install -m 0600 \
+  /usr/share/doc/stsbl-iserv-server-unifios/examples/ap-reboot.env.example \
+  /etc/iserv/server-unifios/ap-reboot.env
+editor /etc/iserv/server-unifios/ap-reboot.env
+```
+
+Set `enabled=true` to activate the daily job. It restarts only access points
+whose names start with `name_prefix` (default: `UAP-`) through the controller
+API. The profile is optional, is not published, and must remain mode `0600`.
+The job can also be run on demand:
+
+```sh
+/usr/lib/iserv/server-unifios/server-unifios-reboot-aps
+```
+
 ## Source provenance
 
 The upstream container Dockerfile, Compose manifest, and entrypoint are pinned
@@ -108,6 +130,7 @@ Useful local checks:
 ```sh
 sh -n cron/daily.d/server-unifios-update lib/server-unifios/server-unifios-rotate-psk
 bash -n lib/server-unifios/unifi-set-psk lib/server-unifios/rotate_wlan_psk
+sh -n cron/daily.d/server-unifios-reboot-aps lib/server-unifios/server-unifios-reboot-aps
 HOST=unifi.example.invalid docker compose -f docker/docker-compose.yaml config
 dpkg-buildpackage -us -uc -b
 ```

@@ -1,0 +1,31 @@
+#!/bin/sh
+set -eu
+
+profile=${PROFILE_FILE:-/etc/iserv/server-unifios/ap-reboot.env}
+[ -f "$profile" ] || exit 0
+
+unset enabled api_key base_url site name_prefix
+. "$profile"
+[ "${enabled:-false}" = true ] || exit 0
+: "${api_key:?api_key missing}"
+
+base_url=${base_url:-https://$(hostname -f)}
+site=${site:-default}
+name_prefix=${name_prefix:-UAP-}
+api_url=$base_url/proxy/network/api/s/$site
+
+curl -fsS -k \
+  -H "X-API-KEY: $api_key" \
+  "$api_url/stat/device" |
+  jq -r --arg prefix "$name_prefix" \
+    '.data[] | select(.type == "uap" and (.name | startswith($prefix))) | [.name, .mac] | @tsv' |
+  while IFS="$(printf '\t')" read -r name mac; do
+    [ -n "$mac" ] || continue
+    printf 'Requesting reboot for %s\n' "$name" >&2
+    curl -fsS -k \
+      -H "X-API-KEY: $api_key" \
+      -H 'Content-Type: application/json' \
+      -X POST \
+      -d "{\"cmd\":\"restart\",\"mac\":\"$mac\"}" \
+      "$api_url/cmd/devmgr" >/dev/null
+  done

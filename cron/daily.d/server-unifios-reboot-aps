@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+
+/usr/lib/iserv/server-unifios/server-unifios-reboot-aps
