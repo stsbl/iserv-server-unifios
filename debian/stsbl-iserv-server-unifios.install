@@ -1,0 +1,9 @@
+config/* usr/share/iserv/iservcfg/config
+cron/* usr/share/iserv/cron
+docker/* usr/share/iserv/server-unifios/docker
+iconf/* usr/share/iserv/iconf
+iservchk/* usr/share/iserv/iconf/etc/iserv/chk.d
+lib/* usr/lib/iserv/server-unifios
+psk-profiles.d/* usr/share/doc/stsbl-iserv-server-unifios/examples/psk-profiles.d
+systemd/* lib/systemd/system
+LICENSE* usr/share/doc/stsbl-iserv-server-unifios

@@ -1,0 +1,7 @@
+UnifiOsPskProfiles:
+name            UniFi OS PSK profiles
+description     Directory containing root-only YAML profile definitions for WLAN PSK rotation.
+group           Module: UniFi OS Server
+type            string
+default         /etc/iserv/server-unifios/psk-profiles.d
+readonly        true

@@ -1,0 +1,16 @@
+[Unit]
+Description=IServ UniFi OS Server Docker Compose service
+After=network-online.target docker.service
+Requires=docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/usr/share/iserv/server-unifios/docker
+EnvironmentFile=/var/lib/iserv/server-unifios/docker-compose.env
+ExecStart=/usr/bin/docker compose up -d --remove-orphans --quiet-pull
+ExecStop=/usr/bin/docker compose down
+
+[Install]
+WantedBy=multi-user.target

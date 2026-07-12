@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+
+cd /usr/share/iserv/server-unifios/docker
+. /var/lib/iserv/server-unifios/docker-compose.env
+/usr/bin/docker compose pull --quiet
+/usr/bin/docker compose up -d --remove-orphans
+

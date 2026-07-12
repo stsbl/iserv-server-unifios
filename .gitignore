@@ -1,0 +1,6 @@
+debian/.debhelper/
+debian/*.debhelper.log
+debian/*.substvars
+debian/files
+debian/stsbl-iserv-server-unifios/
+

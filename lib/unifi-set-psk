@@ -1,0 +1,52 @@
+#!/bin/bash
+set -euo pipefail
+
+if [ "$#" -ne 1 ]; then
+	echo "Usage: $0 <new-psk>" >&2
+	exit 2
+fi
+
+NEW_PSK="$1"
+UNIFI_BASE_URL="${UNIFI_BASE_URL:-https://unifi.local}"
+UNIFI_SITE="${UNIFI_SITE:-default}"
+UNIFI_WLAN_NAME="${UNIFI_WLAN_NAME:-IServ Guest}"
+COOKIE_JAR="$(mktemp)"
+trap 'rm -f "$COOKIE_JAR"' EXIT
+
+if [ -n "${UNIFI_API_KEY:-}" ]; then
+	AUTH_HEADER=(-H "X-API-KEY: $UNIFI_API_KEY")
+else
+	: "${UNIFI_USERNAME:?UNIFI_USERNAME is required when UNIFI_API_KEY is unset}"
+	: "${UNIFI_PASSWORD:?UNIFI_PASSWORD is required when UNIFI_API_KEY is unset}"
+	AUTH_HEADER=()
+
+	curl -fsS -k \
+		-c "$COOKIE_JAR" \
+		-H 'Content-Type: application/json' \
+		-X POST \
+		-d "{\"username\":\"$UNIFI_USERNAME\",\"password\":\"$UNIFI_PASSWORD\"}" \
+		"$UNIFI_BASE_URL/api/auth/login" >/dev/null
+fi
+
+WLAN_LIST="$(curl -fsS -k \
+	"${AUTH_HEADER[@]}" \
+	-b "$COOKIE_JAR" \
+	"$UNIFI_BASE_URL/proxy/network/api/s/$UNIFI_SITE/rest/wlanconf")"
+
+WLAN_JSON="$(printf '%s' "$WLAN_LIST" | jq -cer --arg name "$UNIFI_WLAN_NAME" '.data[] | select(.name == $name)' | head -n1)"
+WLAN_ID="$(printf '%s' "$WLAN_JSON" | jq -r '._id')"
+
+if [ -z "$WLAN_ID" ] || [ "$WLAN_ID" = "null" ]; then
+	echo "UniFi WLAN not found: $UNIFI_WLAN_NAME" >&2
+	exit 1
+fi
+
+UPDATED_WLAN="$(printf '%s' "$WLAN_JSON" | jq -c --arg psk "$NEW_PSK" '.x_passphrase = $psk')"
+
+curl -v -fsS -k \
+	"${AUTH_HEADER[@]}" \
+	-b "$COOKIE_JAR" \
+	-H 'Content-Type: application/json' \
+	-X PUT \
+	-d "$UPDATED_WLAN" \
+	"$UNIFI_BASE_URL/proxy/network/api/s/$UNIFI_SITE/rest/wlanconf/$WLAN_ID" #>/dev/null

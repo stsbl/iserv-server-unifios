@@ -1,0 +1,24 @@
+Source: stsbl-iserv-server-unifios
+Section: misc
+Priority: optional
+Maintainer: Stadtteilschule Blankenese <repository@stsbl.de>
+Build-Depends: debhelper-compat (= 13), dh-sequence-iserv, dh-sequence-stsbl
+Standards-Version: 4.5.1
+Rules-Requires-Root: no
+
+Package: stsbl-iserv-server-unifios
+Architecture: all
+Depends: docker-compose-plugin,
+         iserv-config-file,
+         iserv-server-docker,
+         iserv-server-ferm,
+         curl,
+         jq,
+         nginx,
+         pwgen,
+         qrencode,
+         ${misc:Depends},
+         ${perl:Depends}
+Conflicts: unifi, unifi-controller
+Description: UniFi OS Server Docker Compose integration for IServ
+ Manages lemker/unifi-os-server as an IServ-managed Docker Compose service.

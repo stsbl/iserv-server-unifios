@@ -1,0 +1,27 @@
+#!/bin/sh
+set -eu
+
+profiles=/etc/iserv/server-unifios/psk-profiles.d
+[ -d "$profiles" ] || exit 0
+
+for profile in "$profiles"/*.env; do
+  [ -e "$profile" ] || continue
+  unset name site wlan_name api_key schedule notice access_mode access_value
+  . "$profile"
+  [ "${enabled:-false}" = true ] || continue
+  : "${name:?profile name missing}" "${site:?profile site missing}" \
+    "${wlan_name:?profile WLAN name missing}" "${api_key:?profile API key missing}"
+  output=/var/lib/iserv/server-unifios/psk/$name
+  install -d -m 0755 "$output"
+  export UNIFI_BASE_URL="${base_url:-https://$HOST}"
+  export UNIFI_SITE="$site"
+  export UNIFI_WLAN_NAME="$wlan_name"
+  export UNIFI_API_KEY="$api_key"
+  export UNIFI_SSID="${ssid:-$wlan_name}"
+  export WIFI_NOTICE_TEXT="${notice:-}"
+  export TARGET_DIR="$output"
+  export SET_PSK_COMMAND=/usr/lib/iserv/server-unifios/unifi-set-psk
+  export TEMPLATE_FILE=/usr/lib/iserv/server-unifios/template.html
+  export STYLE_FILE=/usr/lib/iserv/server-unifios/style.css
+  /usr/lib/iserv/server-unifios/rotate_wlan_psk
+done
