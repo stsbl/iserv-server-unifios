@@ -1,0 +1,23 @@
+@def $NET_UNIFI_CONTAINER = (198.18.2.0/24);
+
+domain (ip) {
+  table filter {
+    chain INPUT {
+      interface br-unifi jump input_docker_default;
+    }
+    chain FORWARD {
+      interface br-unifi outerface br-unifi jump docker_default_internal;
+      interface br-unifi jump docker_default_out;
+      outerface br-unifi jump docker_default_in;
+    }
+  }
+  table nat {
+    chain POSTROUTING {
+      saddr @ipfilter(($NET_UNIFI_CONTAINER)) jump MASQUERADE;
+    }
+  }
+}
+
+domain (ip ip6) table filter chain input_world proto tcp dport (http https) jump ACCEPT;
+domain (ip ip6) table filter chain input_world proto tcp dport (11443 8080 5005 9543 6789 8443 8444 11084 5671 8880 8881 8882) ACCEPT;
+domain (ip ip6) table filter chain input_world proto udp dport (3478 5514 10003) ACCEPT;

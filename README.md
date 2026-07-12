@@ -32,6 +32,14 @@ stack.  Persistent container state deliberately remains outside the package:
 The Compose configuration also mounts `/sys/fs/cgroup` read/write because
 UniFi OS uses systemd inside the container.  It exposes the controller GUI on
 TCP 11443 and the upstream adoption, STUN, portal, AQMPS and discovery ports.
+The package-owned FERM fragment configures the `br-unifi` Docker bridge,
+masquerading for `198.18.2.0/24`, and the controller's required TCP/UDP ports.
+
+Nginx terminates the public TLS connection and reverse-proxies `/` to the
+container on `https://127.0.0.1:11443`, including WebSocket upgrade headers.
+It also serves the generated QR-code pages at `/psk/guest/` and `/psk/office/`
+from the managed PSK directories.  Their current STSBL network allowlists are
+rendered by the package IConf fragment.
 
 The daily IServ cron job pulls `ghcr.io/lemker/unifi-os-server:latest`, runs
 Compose reconciliation, and then rotates enabled PSK profiles.  A new image
