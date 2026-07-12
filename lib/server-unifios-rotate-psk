@@ -13,7 +13,7 @@ for profile in "$profiles"/*.env; do
     "${wlan_name:?profile WLAN name missing}" "${api_key:?profile API key missing}"
   output=/var/lib/iserv/server-unifios/psk/$name
   install -d -m 0755 "$output"
-  export UNIFI_BASE_URL="${base_url:-https://$HOST}"
+  export UNIFI_BASE_URL="${base_url:-https://${HOST:-$(hostname -f)}}"
   export UNIFI_SITE="$site"
   export UNIFI_WLAN_NAME="$wlan_name"
   export UNIFI_API_KEY="$api_key"

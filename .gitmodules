@@ -1,0 +1,4 @@
+[submodule "docker/unifi-os-server"]
+	path = docker/unifi-os-server
+	url = git@git.jacobi-bs.de:sysadmin/unifi-os-server.git
+	branch = adoptions
