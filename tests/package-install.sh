@@ -10,7 +10,6 @@ dh_iservinstall -p"$package"
 test -f "$package_dir/usr/lib/iserv/server-unifios/rotate_wlan_psk"
 test -f "$package_dir/usr/share/iserv/$package/template.html"
 test -f "$package_dir/usr/share/iserv/$package/style.css"
-test ! -e "$package_dir/psk-rotator"
 
 grep -Fqx "  export TEMPLATE_FILE=/usr/share/iserv/$package/template.html" \
   lib/server-unifios/server-unifios-rotate-psk

@@ -99,9 +99,7 @@ this command separately if automatic rotation is wanted.
 
 The upstream container Dockerfile, Compose manifest, and entrypoint are pinned
 as the `docker/unifi-os-server` submodule on the `adoptions` branch of
-`git@git.jacobi-bs.de:sysadmin/unifi-os-server.git`.  The historical
-WLAN rotator repository is included under `psk-rotator/` with its Git history;
-the package runtime copies live in `lib/`.
+`git@git.jacobi-bs.de:sysadmin/unifi-os-server.git`.
 
 ## Development
 
