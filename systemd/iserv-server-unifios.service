@@ -6,11 +6,10 @@ Wants=network-online.target
 ConditionPathExists=/var/lib/iserv/server-unifios/docker-compose.env
 
 [Service]
-Type=oneshot
-RemainAfterExit=yes
+Type=exec
 WorkingDirectory=/usr/share/iserv/server-unifios/docker/unifi-os-server
 EnvironmentFile=/var/lib/iserv/server-unifios/docker-compose.env
-ExecStart=/usr/bin/docker compose up -d --remove-orphans --quiet-pull
+ExecStart=/usr/bin/docker compose up --remove-orphans --quiet-pull
 ExecStop=/usr/bin/docker compose down
 
 [Install]

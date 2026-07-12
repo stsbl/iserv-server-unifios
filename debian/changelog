@@ -1,3 +1,9 @@
+stsbl-iserv-server-unifios (0.1.0-4) unstable; urgency=medium
+
+  * Keep the package-based iservchk fragment name.
+
+ -- Stadtteilschule Blankenese <repository@stsbl.de>  Sun, 12 Jul 2026 20:20:00 +0200
+
 stsbl-iserv-server-unifios (0.1.0-3) unstable; urgency=medium
 
   * Use a valid iservchk service directory.
