@@ -6,8 +6,6 @@ MkDir 0755 root:root /var/lib/iserv/server-unifios/unifi
 MkDir 0755 root:root /var/lib/iserv/server-unifios/mongodb
 MkDir 0755 root:root /var/lib/iserv/server-unifios/rabbitmq-ssl
 MkDir 0755 root:root /var/lib/iserv/server-unifios/psk
-MkDir 0755 root:root /var/lib/iserv/server-unifios/psk/guest
-MkDir 0755 root:root /var/lib/iserv/server-unifios/psk/office
 MkDir 0755 root:root /var/log/iserv/server-unifios
 MkDir 0750 root:root /etc/iserv/server-unifios
 MkDir 0750 root:root /etc/iserv/server-unifios/psk-profiles.d
@@ -15,5 +13,30 @@ MkDir 0750 root:root /etc/iserv/server-unifios/psk-profiles.d
 Touch /var/lib/iserv/server-unifios/docker-compose.env
 ChPerm 0600 root:root /var/lib/iserv/server-unifios/docker-compose.env
 Check /var/lib/iserv/server-unifios/docker-compose.env
+
+Test "create PSK profile directories"
+  for profile in /etc/iserv/server-unifios/psk-profiles.d/*.env
+  do
+    [ -f "$profile" ] || continue
+    unset enabled name
+    . "$profile"
+    [ "${enabled:-false}" = true ] || continue
+    case "${name:-}" in
+      ''|*[!A-Za-z0-9_-]*) exit 1 ;;
+    esac
+    [ -d "/var/lib/iserv/server-unifios/psk/$name" ] || exit 1
+  done
+  ---
+  for profile in /etc/iserv/server-unifios/psk-profiles.d/*.env
+  do
+    [ -f "$profile" ] || continue
+    unset enabled name
+    . "$profile"
+    [ "${enabled:-false}" = true ] || continue
+    case "${name:-}" in
+      ''|*[!A-Za-z0-9_-]*) exit 1 ;;
+    esac
+    install -d -m 0755 "/var/lib/iserv/server-unifios/psk/$name"
+  done
 
 Start iserv-server-unifios

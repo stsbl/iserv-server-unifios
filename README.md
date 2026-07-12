@@ -37,9 +37,9 @@ masquerading for `198.18.2.0/24`, and the controller's required TCP/UDP ports.
 
 Nginx terminates the public TLS connection and reverse-proxies `/` to the
 container on `https://127.0.0.1:11443`, including WebSocket upgrade headers.
-It also serves the generated QR-code pages at `/psk/guest/` and `/psk/office/`
-from the managed PSK directories.  Their current STSBL network allowlists are
-rendered by the package IConf fragment.
+It generates a QR-code location `/psk/<profile>/` for every enabled PSK
+profile.  A profile using `access_mode=cidr` is protected by its own CIDR
+allowlist; no PSK directories or locations are hard-coded in the package.
 
 The daily IServ cron job pulls `ghcr.io/lemker/unifi-os-server:latest`, runs
 Compose reconciliation, and then rotates enabled PSK profiles.  A new image
@@ -70,12 +70,13 @@ Each profile supports the following fields:
 | `name` | yes | Output directory name below `psk/`; use letters, digits, `_` and `-`. |
 | `site` | yes | UniFi site, usually `default`. |
 | `wlan_name` | yes | Exact UniFi WLAN name to update. |
-| `api_key` | yes | UniFi API key; keep it only in this mode-0600 file. |
+| `api_key` | one auth method | Preferred UniFi API key; keep it only in this mode-0600 file. |
+| `username` / `password` | one auth method | Alternative UniFi login when `api_key` is empty; both fields are required together. |
 | `base_url` | no | UniFi controller URL; defaults to `https://$(hostname -f)`. |
 | `ssid` | no | SSID encoded in the QR code; defaults to `wlan_name`. |
 | `notice` | no | Text rendered in the generated HTML page. |
 | `schedule` | no | Reserved per-profile schedule metadata; profiles currently run in the daily package job. |
-| `access_mode` / `access_value` | no | Reserved access-policy metadata for generated web-serving configuration. |
+| `access_mode` / `access_value` | no | Web access policy. Use `cidr` and a whitespace-separated IPv4/IPv6 CIDR allowlist. |
 
 Do not commit profile files or API keys.  The generated public artifacts are
 written to `/var/lib/iserv/server-unifios/psk/<name>/` as `index.html`,

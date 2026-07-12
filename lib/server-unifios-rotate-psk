@@ -6,17 +6,23 @@ profiles=/etc/iserv/server-unifios/psk-profiles.d
 
 for profile in "$profiles"/*.env; do
   [ -e "$profile" ] || continue
-  unset name site wlan_name api_key schedule notice access_mode access_value
+  unset name site wlan_name api_key username password schedule notice access_mode access_value
   . "$profile"
   [ "${enabled:-false}" = true ] || continue
   : "${name:?profile name missing}" "${site:?profile site missing}" \
-    "${wlan_name:?profile WLAN name missing}" "${api_key:?profile API key missing}"
+    "${wlan_name:?profile WLAN name missing}"
+  if [ -z "${api_key:-}" ]; then
+    : "${username:?profile username missing when api_key is unset}" \
+      "${password:?profile password missing when api_key is unset}"
+  fi
   output=/var/lib/iserv/server-unifios/psk/$name
   install -d -m 0755 "$output"
   export UNIFI_BASE_URL="${base_url:-https://${HOST:-$(hostname -f)}}"
   export UNIFI_SITE="$site"
   export UNIFI_WLAN_NAME="$wlan_name"
-  export UNIFI_API_KEY="$api_key"
+  export UNIFI_API_KEY="${api_key:-}"
+  export UNIFI_USERNAME="${username:-}"
+  export UNIFI_PASSWORD="${password:-}"
   export UNIFI_SSID="${ssid:-$wlan_name}"
   export WIFI_NOTICE_TEXT="${notice:-}"
   export TARGET_DIR="$output"
