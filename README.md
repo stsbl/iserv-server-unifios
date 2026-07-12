@@ -45,9 +45,9 @@ It generates a QR-code location `/psk/<profile>/` for every enabled PSK
 profile.  A profile using `access_mode=cidr` is protected by its own CIDR
 allowlist; no PSK directories or locations are hard-coded in the package.
 
-The daily IServ cron job pulls `ghcr.io/lemker/unifi-os-server:latest`, runs
-Compose reconciliation, and then rotates enabled PSK profiles.  A new image
-may therefore recreate the controller during that run.
+The daily IServ cron job pulls `ghcr.io/lemker/unifi-os-server:latest` and
+runs Compose reconciliation. A new image may therefore recreate the controller
+during that run.
 
 ## WLAN PSK profiles
 
@@ -78,8 +78,8 @@ Each profile supports the following fields:
 | `username` / `password` | one auth method | Alternative UniFi login when `api_key` is empty; both fields are required together. |
 | `base_url` | no | UniFi controller URL; defaults to `https://$(hostname -f)`. |
 | `ssid` | no | SSID encoded in the QR code; defaults to `wlan_name`. |
+| `title` | no | Browser page title; defaults to `IServ Gast-WLAN-Schlüssel`. |
 | `notice` | no | Text rendered in the generated HTML page. |
-| `schedule` | no | Reserved per-profile schedule metadata; profiles currently run in the daily package job. |
 | `access_mode` / `access_value` | no | Web access policy. Use `cidr` and a whitespace-separated IPv4/IPv6 CIDR allowlist. |
 
 Do not commit profile files or API keys.  The generated public artifacts are
@@ -91,6 +91,9 @@ Run a rotation manually after changing a profile:
 ```sh
 /usr/lib/iserv/server-unifios/server-unifios-rotate-psk
 ```
+
+PSK rotation is intentionally not part of the daily UniFi update job. Schedule
+this command separately if automatic rotation is wanted.
 
 ## Source provenance
 
@@ -105,8 +108,8 @@ the package runtime copies live in `lib/`.
 Useful local checks:
 
 ```sh
-sh -n cron/daily.d/server-unifios-update lib/server-unifios-rotate-psk
-bash -n lib/unifi-set-psk lib/rotate_wlan_psk
+sh -n cron/daily.d/server-unifios-update lib/server-unifios/server-unifios-rotate-psk
+bash -n lib/server-unifios/unifi-set-psk lib/server-unifios/rotate_wlan_psk
 HOST=unifi.example.invalid docker compose -f docker/docker-compose.yaml config
 dpkg-buildpackage -us -uc -b
 ```

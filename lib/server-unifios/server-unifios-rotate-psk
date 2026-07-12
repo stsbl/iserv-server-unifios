@@ -6,7 +6,7 @@ profiles=/etc/iserv/server-unifios/psk-profiles.d
 
 for profile in "$profiles"/*.env; do
   [ -e "$profile" ] || continue
-  unset name site wlan_name api_key username password schedule notice access_mode access_value
+  unset name site wlan_name api_key username password title notice access_mode access_value
   . "$profile"
   [ "${enabled:-false}" = true ] || continue
   : "${name:?profile name missing}" "${site:?profile site missing}" \
@@ -24,10 +24,11 @@ for profile in "$profiles"/*.env; do
   export UNIFI_USERNAME="${username:-}"
   export UNIFI_PASSWORD="${password:-}"
   export UNIFI_SSID="${ssid:-$wlan_name}"
+  export WIFI_TITLE="${title:-IServ Gast-WLAN-Schlüssel}"
   export WIFI_NOTICE_TEXT="${notice:-}"
   export TARGET_DIR="$output"
   export SET_PSK_COMMAND=/usr/lib/iserv/server-unifios/unifi-set-psk
-  export TEMPLATE_FILE=/usr/lib/iserv/server-unifios/template.html
-  export STYLE_FILE=/usr/lib/iserv/server-unifios/style.css
+  export TEMPLATE_FILE=/usr/share/iserv/stsbl-iserv-server-unifios/template.html
+  export STYLE_FILE=/usr/share/iserv/stsbl-iserv-server-unifios/style.css
   /usr/lib/iserv/server-unifios/rotate_wlan_psk
 done

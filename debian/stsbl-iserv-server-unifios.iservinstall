@@ -1,0 +1,6 @@
+docker/* usr/share/iserv/server-unifios/docker
+psk-profiles.d/* usr/share/doc/stsbl-iserv-server-unifios/examples/psk-profiles.d
+LICENSE* usr/share/doc/stsbl-iserv-server-unifios
+
+X:psk-rotator/*
+X:tests/*
