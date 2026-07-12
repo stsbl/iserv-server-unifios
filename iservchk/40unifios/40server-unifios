@@ -1,14 +1,32 @@
 MkDir 0755 root:root /var/lib/iserv/server-unifios
-MkDir 0755 root:root /var/lib/iserv/server-unifios/persistent
-MkDir 0755 root:root /var/lib/iserv/server-unifios/data
-MkDir 0755 root:root /var/lib/iserv/server-unifios/srv
-MkDir 0755 root:root /var/lib/iserv/server-unifios/unifi
-MkDir 0755 root:root /var/lib/iserv/server-unifios/mongodb
-MkDir 0755 root:root /var/lib/iserv/server-unifios/rabbitmq-ssl
 MkDir 0755 root:root /var/lib/iserv/server-unifios/psk
-MkDir 0755 root:root /var/log/iserv/server-unifios
 MkDir 0750 root:root /etc/iserv/server-unifios
 MkDir 0750 root:root /etc/iserv/server-unifios/psk-profiles.d
+
+Test "create mutable container directories"
+  for dir in \
+    /var/lib/iserv/server-unifios/persistent \
+    /var/lib/iserv/server-unifios/data \
+    /var/lib/iserv/server-unifios/srv \
+    /var/lib/iserv/server-unifios/unifi \
+    /var/lib/iserv/server-unifios/mongodb \
+    /var/lib/iserv/server-unifios/rabbitmq-ssl \
+    /var/log/iserv/server-unifios
+  do
+    [ -d "$dir" ] || exit 1
+  done
+  ---
+  for dir in \
+    /var/lib/iserv/server-unifios/persistent \
+    /var/lib/iserv/server-unifios/data \
+    /var/lib/iserv/server-unifios/srv \
+    /var/lib/iserv/server-unifios/unifi \
+    /var/lib/iserv/server-unifios/mongodb \
+    /var/lib/iserv/server-unifios/rabbitmq-ssl \
+    /var/log/iserv/server-unifios
+  do
+    install -d -m 0755 "$dir"
+  done
 
 Touch /var/lib/iserv/server-unifios/docker-compose.env
 ChPerm 0600 root:root /var/lib/iserv/server-unifios/docker-compose.env

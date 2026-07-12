@@ -29,6 +29,10 @@ stack.  Persistent container state deliberately remains outside the package:
 - `/var/lib/iserv/server-unifios/{persistent,data,srv,unifi,mongodb,rabbitmq-ssl}`
 - `/var/log/iserv/server-unifios`
 
+iservchk creates these bind-mount directories when absent, but deliberately
+does not reconcile their owner or mode afterwards: the container owns and
+changes permissions within this state.
+
 The Compose configuration also mounts `/sys/fs/cgroup` read/write because
 UniFi OS uses systemd inside the container.  It exposes the controller GUI on
 TCP 11443 and the upstream adoption, STUN, portal, AQMPS and discovery ports.
