@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-NEWPSK="$(pwgen 16 1)"
+NEWPSK="${NEWPSK:-$(pwgen 58 1)}"
 LASTROTATION="$(LC_ALL=de_DE.UTF-8 date)"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SSID="${UNIFI_SSID:-Gast}"

@@ -43,10 +43,10 @@ fi
 
 UPDATED_WLAN="$(printf '%s' "$WLAN_JSON" | jq -c --arg psk "$NEW_PSK" '.x_passphrase = $psk')"
 
-curl -fsS -k \
+curl -v -fsS -k \
 	"${AUTH_HEADER[@]}" \
 	-b "$COOKIE_JAR" \
 	-H 'Content-Type: application/json' \
 	-X PUT \
 	-d "$UPDATED_WLAN" \
-	"$UNIFI_BASE_URL/proxy/network/api/s/$UNIFI_SITE/rest/wlanconf/$WLAN_ID" >/dev/null
+	"$UNIFI_BASE_URL/proxy/network/api/s/$UNIFI_SITE/rest/wlanconf/$WLAN_ID" #>/dev/null
