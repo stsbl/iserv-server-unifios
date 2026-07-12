@@ -4,3 +4,6 @@ debian/*.substvars
 debian/files
 debian/stsbl-iserv-server-unifios/
 
+
+debian/*.postrm.debhelper
+debian/debhelper-build-stamp
