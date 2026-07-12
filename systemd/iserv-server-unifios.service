@@ -3,6 +3,7 @@ Description=IServ UniFi OS Server Docker Compose service
 After=network-online.target docker.service
 Requires=docker.service
 Wants=network-online.target
+ConditionPathExists=/var/lib/iserv/server-unifios/docker-compose.env
 
 [Service]
 Type=oneshot

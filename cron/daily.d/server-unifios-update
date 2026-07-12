@@ -4,5 +4,5 @@ set -eu
 cd /usr/share/iserv/server-unifios/docker/unifi-os-server
 . /var/lib/iserv/server-unifios/docker-compose.env
 /usr/bin/docker compose pull --quiet
-/usr/bin/docker compose up -d --remove-orphans
+/bin/systemctl restart iserv-server-unifios.service
 /usr/lib/iserv/server-unifios/server-unifios-rotate-psk
