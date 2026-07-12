@@ -1,0 +1,29 @@
+body {
+	margin: 0;
+	padding: 0;
+	background-color: #D3D3D3;
+	background: radial-gradient(circle 3000px, #D3D3D3, #000000);
+}
+
+#main {
+	background-color: #FFFFFF;
+	color: #000000;
+	width: 600px;
+	height: auto;
+	margin: 100px auto 20px auto;
+	top: 50%;
+	left: 50%;
+	padding: 20px;
+	padding-top: 0px;
+	font-family: sans-serif;
+	font-size: 10pt;
+	border-radius: 10px;
+}
+
+th {
+	text-align: left;
+}
+
+td {
+	padding-left: 30px;
+}
