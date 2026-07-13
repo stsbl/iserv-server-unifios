@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e
+
+PSK=${1:?PSK missing}
+LASTROTATION="$(LC_ALL=de_DE.UTF-8 date)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SSID="${UNIFI_SSID:-Gast}"
+NOTICE_TEXT="${WIFI_NOTICE_TEXT:-Achtung! Der WLAN-Schlüssel wird täglich automatisch rotiert. Dieses Netzwerk ist ausschließlich für Gäste oder andere temporäre Zugänge.}"
+TITLE="${WIFI_TITLE:-IServ Gast-WLAN-Schlüssel}"
+TARGET_DIR="${TARGET_DIR:-/var/www/internal-netmgmt}"
+TEMPLATE_FILE="${TEMPLATE_FILE:-$SCRIPT_DIR/template.html}"
+STYLE_FILE="${STYLE_FILE:-$SCRIPT_DIR/style.css}"
+
+mkdir -p "$TARGET_DIR"
+qrencode -m 0 -o "$TARGET_DIR/qrcode.png" "WIFI:S:$SSID;T:WPA;P:$PSK;;"
+sed -E \
+	-e "s/%ssid%/$SSID/g" \
+	-e "s/%psk%/$PSK/g" \
+	-e "s/%last_rotation%/$LASTROTATION/g" \
+	-e "s|%title%|$TITLE|g" \
+	-e "s|%notice_text%|$NOTICE_TEXT|g" \
+	"$TEMPLATE_FILE" > "$TARGET_DIR/index.html"
+install -m 0644 "$STYLE_FILE" "$TARGET_DIR/style.css"

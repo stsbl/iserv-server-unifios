@@ -4,13 +4,15 @@ set -eu
 package=stsbl-iserv-server-unifios
 package_dir=debian/$package
 
-grep -Fqx 'DEPENDENCY_TARGETS += docker/unifi-os-server' mk/config.mk
+grep -Fqx 'DEPENDENCY_TARGETS += init_unifi_os_server' mk/config.mk
+grep -Fqx '.PHONY: init_unifi_os_server' mk/config.mk
 grep -Fq 'git submodule update --init docker/unifi-os-server' mk/config.mk
 
 rm -rf "$package_dir" debian/.debhelper
 dh_iservinstall -p"$package"
 
 test -f "$package_dir/usr/lib/iserv/server-unifios/rotate_wlan_psk"
+test -x "$package_dir/usr/lib/iserv/server-unifios/render_wlan_psk"
 test -x "$package_dir/usr/lib/iserv/server-unifios/server-unifios-reboot-aps"
 grep -Fqx '#!/bin/bash' "$package_dir/usr/lib/iserv/server-unifios/server-unifios-reboot-aps"
 grep -Fq -- '--config <(printf' "$package_dir/usr/lib/iserv/server-unifios/server-unifios-reboot-aps"
@@ -31,10 +33,12 @@ grep -Fqx "  export STYLE_FILE=/usr/share/iserv/$package/style.css" \
   lib/server-unifios/server-unifios-rotate-psk
 grep -Fq '<title>%title%</title>' "$package_dir/usr/share/iserv/$package/template.html"
 grep -Fq 's|%title%|$TITLE|g' \
-  lib/server-unifios/rotate_wlan_psk
-if grep -Fq server-unifios-rotate-psk cron/daily.d/server-unifios-update; then
-  exit 1
-fi
+  lib/server-unifios/render_wlan_psk
+grep -Fqx 'MkDir 0700 root:root /var/lib/iserv/server-unifios/psk-state' \
+  iservchk/40unifios/40server-unifios
+grep -Fq -- '--force-rotate' lib/server-unifios/server-unifios-rotate-psk
+grep -Fq 'PSK_STATE_FILE=' lib/server-unifios/server-unifios-rotate-psk
+grep -Fq server-unifios-rotate-psk cron/daily.d/server-unifios-update
 test -x "$package_dir/usr/lib/iserv/server-unifios/server-unifios-rotate-psk"
 
 tmp=$(mktemp -d)

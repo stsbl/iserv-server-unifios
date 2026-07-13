@@ -1,5 +1,6 @@
 MkDir 0755 root:root /var/lib/iserv/server-unifios
 MkDir 0755 root:root /var/lib/iserv/server-unifios/psk
+MkDir 0700 root:root /var/lib/iserv/server-unifios/psk-state
 MkDir 0750 root:root /etc/iserv/server-unifios
 MkDir 0750 root:root /etc/iserv/server-unifios/psk-profiles.d
 

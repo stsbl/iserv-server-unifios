@@ -2,33 +2,50 @@
 set -eu
 
 profiles=/etc/iserv/server-unifios/psk-profiles.d
-[ -d "$profiles" ] || exit 0
+force_profiles=
 
+if [ "${1:-}" = --force-rotate ]; then
+  force_profiles=${2:?missing profile list for --force-rotate}
+  [ "$#" -eq 2 ] || { echo 'Usage: server-unifios-rotate-psk [--force-rotate profile1,profile2]' >&2; exit 2; }
+elif [ "$#" -ne 0 ]; then
+  echo 'Usage: server-unifios-rotate-psk [--force-rotate profile1,profile2]' >&2
+  exit 2
+fi
+
+[ -d "$profiles" ] || exit 0
 for profile in "$profiles"/*.env; do
   [ -e "$profile" ] || continue
-  unset name site wlan_name api_key username password title notice access_mode access_value
+  unset name site wlan_name api_key username password title notice access_mode access_value rotate
   . "$profile"
-  [ "${enabled:-false}" = true ] || continue
-  : "${name:?profile name missing}" "${site:?profile site missing}" \
-    "${wlan_name:?profile WLAN name missing}"
-  if [ -z "${api_key:-}" ]; then
-    : "${username:?profile username missing when api_key is unset}" \
-      "${password:?profile password missing when api_key is unset}"
-  fi
+  case "${name:-}" in ''|*[!A-Za-z0-9_-]*) echo "Invalid PSK profile: $profile" >&2; exit 2;; esac
+  force=false
+  case ",$force_profiles," in *",$name,"*) force=true;; esac
   output=/var/lib/iserv/server-unifios/psk/$name
+  state=/var/lib/iserv/server-unifios/psk-state/$name
   install -d -m 0755 "$output"
-  export UNIFI_BASE_URL="${base_url:-https://${HOST:-$(hostname -f)}}"
-  export UNIFI_SITE="$site"
-  export UNIFI_WLAN_NAME="$wlan_name"
-  export UNIFI_API_KEY="${api_key:-}"
-  export UNIFI_USERNAME="${username:-}"
-  export UNIFI_PASSWORD="${password:-}"
-  export UNIFI_SSID="${ssid:-$wlan_name}"
-  export WIFI_TITLE="${title:-IServ Gast-WLAN-Schlüssel}"
-  export WIFI_NOTICE_TEXT="${notice:-}"
-  export TARGET_DIR="$output"
-  export SET_PSK_COMMAND=/usr/lib/iserv/server-unifios/unifi-set-psk
+  export UNIFI_SSID="${ssid:-$wlan_name}" WIFI_TITLE="${title:-IServ Gast-WLAN-Schlüssel}"
+  export WIFI_NOTICE_TEXT="${notice:-}" TARGET_DIR="$output"
   export TEMPLATE_FILE=/usr/share/iserv/stsbl-iserv-server-unifios/template.html
   export STYLE_FILE=/usr/share/iserv/stsbl-iserv-server-unifios/style.css
-  /usr/lib/iserv/server-unifios/rotate_wlan_psk
+  if [ "${rotate:-false}" = true ] || [ "$force" = true ]; then
+    : "${site:?profile site missing}" "${wlan_name:?profile WLAN name missing}"
+    if [ -z "${api_key:-}" ]; then : "${username:?profile username missing}" "${password:?profile password missing}"; fi
+    export UNIFI_BASE_URL="${base_url:-https://${HOST:-$(hostname -f)}}" UNIFI_SITE="$site" UNIFI_WLAN_NAME="$wlan_name"
+    export UNIFI_API_KEY="${api_key:-}" UNIFI_USERNAME="${username:-}" UNIFI_PASSWORD="${password:-}"
+    export SET_PSK_COMMAND=/usr/lib/iserv/server-unifios/unifi-set-psk PSK_STATE_FILE="$state"
+    /usr/lib/iserv/server-unifios/rotate_wlan_psk
+  elif [ -r "$state" ]; then
+    /usr/lib/iserv/server-unifios/render_wlan_psk "$(cat "$state")"
+  elif [ -r "$output/index.html" ]; then
+    legacy_psk=$(sed -n '/<th>WLAN-Schlüssel<\/th>/,/<\/tr>/s/.*<td>\([^<]*\)<\/td>.*/\1/p' "$output/index.html")
+    if [ -n "$legacy_psk" ]; then
+      umask 077
+      printf '%s\n' "$legacy_psk" > "$state"
+      /usr/lib/iserv/server-unifios/render_wlan_psk "$legacy_psk"
+    else
+      echo "Warning: PSK profile $name has no saved PSK to render" >&2
+    fi
+  else
+    echo "Warning: PSK profile $name has no saved PSK to render" >&2
+  fi
 done
