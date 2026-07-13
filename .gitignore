@@ -9,3 +9,4 @@ debian/*.postrm.debhelper
 debian/debhelper-build-stamp
 
 /Makefile.iservmake
+/.worktrees/

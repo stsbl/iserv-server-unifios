@@ -31,8 +31,10 @@ warning; nginx configuration is still generated.
 ## Invocation
 
 The existing daily update job invokes the profile runner after the controller
-update.  With no options it processes all configured profiles according to
-their `rotate` flags.
+update.  With no options it rotates only profiles with `rotate=true` and
+re-renders the public assets of profiles with `rotate=false` from their saved
+private state.  A disabled profile receives a new key only through the
+explicit manual forced-profile command.
 
 `server-unifios-rotate-psk --force-rotate profile1,profile2` forces a new key
 for exactly the comma-separated named profiles, including profiles whose
