@@ -1,3 +1,13 @@
+stsbl-iserv-server-unifios (26.07.13.1) stable; urgency=medium
+
+  * Fix UniFi package installation and PSK rotation
+  * Remove duplicate PSK rotator sources
+  * Document UniFi AP reboot design
+  * Add controller API access point reboots
+  * Protect AP API key from process arguments
+
+ -- Felix Jacobi <Felix@jacobi-hamburg.net>  Mon, 13 Jul 2026 19:36:16 +0200
+
 stsbl-iserv-server-unifios (26.07.12.2) stable; urgency=medium
 
   * Fixed homepage
