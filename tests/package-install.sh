@@ -4,6 +4,9 @@ set -eu
 package=stsbl-iserv-server-unifios
 package_dir=debian/$package
 
+grep -Fqx 'DEPENDENCY_TARGETS += docker/unifi-os-server' mk/config.mk
+grep -Fq 'git submodule update --init docker/unifi-os-server' mk/config.mk
+
 rm -rf "$package_dir" debian/.debhelper
 dh_iservinstall -p"$package"
 
@@ -14,6 +17,13 @@ grep -Fq -- '--config <(printf' "$package_dir/usr/lib/iserv/server-unifios/serve
 test -f "$package_dir/usr/share/doc/$package/examples/ap-reboot.env.example"
 test -f "$package_dir/usr/share/iserv/$package/template.html"
 test -f "$package_dir/usr/share/iserv/$package/style.css"
+test -f "$package_dir/usr/share/iserv/server-unifios/docker/unifi-os-server/docker-compose.yaml"
+test ! -e "$package_dir/usr/share/iserv/server-unifios/docker/unifi-os-server/.git"
+
+grep -Fqx 'WorkingDirectory=/usr/share/iserv/server-unifios/docker/unifi-os-server' \
+  systemd/iserv-server-unifios.service
+grep -Fqx 'cd /usr/share/iserv/server-unifios/docker/unifi-os-server' \
+  cron/daily.d/server-unifios-update
 
 grep -Fqx "  export TEMPLATE_FILE=/usr/share/iserv/$package/template.html" \
   lib/server-unifios/server-unifios-rotate-psk

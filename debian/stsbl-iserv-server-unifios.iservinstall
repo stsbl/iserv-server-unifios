@@ -1,4 +1,6 @@
 docker/* usr/share/iserv/server-unifios/docker
+docker/unifi-os-server/* usr/share/iserv/server-unifios/docker/unifi-os-server
+X:docker/unifi-os-server/.git
 ap-reboot.env.example usr/share/doc/stsbl-iserv-server-unifios/examples
 psk-profiles.d/* usr/share/doc/stsbl-iserv-server-unifios/examples/psk-profiles.d
 LICENSE* usr/share/doc/stsbl-iserv-server-unifios
