@@ -1,3 +1,9 @@
+stsbl-iserv-server-unifios (26.07.13.3) stable; urgency=medium
+
+  * Automate PSK profile rotation
+
+ -- Felix Jacobi <Felix@jacobi-hamburg.net>  Mon, 13 Jul 2026 22:02:18 +0200
+
 stsbl-iserv-server-unifios (26.07.13.2) stable; urgency=medium
 
   * Package UniFi OS submodule
