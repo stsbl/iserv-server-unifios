@@ -6,9 +6,9 @@ profiles=/etc/iserv/server-unifios/psk-profiles.d
 
 for profile in "$profiles"/*.env; do
   [ -f "$profile" ] || continue
-  unset enabled name access_mode access_value
+  unset rotate name access_mode access_value
   . "$profile"
-  [ "${enabled:-false}" = true ] || continue
+  [ "${rotate:-false}" = true ] || continue
   case "${name:-}" in
     ''|*[!A-Za-z0-9_-]*) continue ;;
   esac
@@ -16,6 +16,7 @@ for profile in "$profiles"/*.env; do
   printf 'location /psk/%s {\n' "$name"
   printf '  alias /var/lib/iserv/server-unifios/psk/%s/;\n' "$name"
   printf '  index index.html;\n'
+  printf '  add_header Cache-Control "no-store" always;\n'
   case "${access_mode:-cidr}" in
     cidr)
       printf '  allow 127.0.0.0/8;\n  allow ::1;\n'
@@ -31,4 +32,3 @@ for profile in "$profiles"/*.env; do
   esac
   printf '}\n\n'
 done
-

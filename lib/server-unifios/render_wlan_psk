@@ -20,4 +20,5 @@ sed -E \
 	-e "s|%title%|$TITLE|g" \
 	-e "s|%notice_text%|$NOTICE_TEXT|g" \
 	"$TEMPLATE_FILE" > "$TARGET_DIR/index.html"
+chmod 0644 "$TARGET_DIR/index.html"
 install -m 0644 "$STYLE_FILE" "$TARGET_DIR/style.css"

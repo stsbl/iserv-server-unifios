@@ -70,7 +70,7 @@ Each profile supports the following fields:
 
 | Field | Required | Meaning |
 | --- | --- | --- |
-| `enabled` | yes | Set to `true` to rotate the profile. |
+| `rotate` | yes | Set to `true` to rotate the profile automatically each day. |
 | `name` | yes | Output directory name below `psk/`; use letters, digits, `_` and `-`. |
 | `site` | yes | UniFi site, usually `default`. |
 | `wlan_name` | yes | Exact UniFi WLAN name to update. |
@@ -92,8 +92,12 @@ Run a rotation manually after changing a profile:
 /usr/lib/iserv/server-unifios/server-unifios-rotate-psk
 ```
 
-PSK rotation is intentionally not part of the daily UniFi update job. Schedule
-this command separately if automatic rotation is wanted.
+The daily UniFi update job rotates profiles with `rotate=true`. To rotate
+selected profiles on demand, including profiles with `rotate=false`, use:
+
+```sh
+/usr/lib/iserv/server-unifios/server-unifios-rotate-psk --force-rotate guest,staff
+```
 
 ## Access-point reboots
 

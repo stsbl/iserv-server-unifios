@@ -1,0 +1,6 @@
+---
+text: "Gast-WLAN-Schlüsselseiten bleiben nach einer Rotation erreichbar und werden nicht zwischengespeichert."
+audience: "admins"
+type: "fixed"
+urgency: "medium"
+highlight: false

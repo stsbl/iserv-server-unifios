@@ -40,6 +40,15 @@ grep -Fq -- '--force-rotate' lib/server-unifios/server-unifios-rotate-psk
 grep -Fq 'PSK_STATE_FILE=' lib/server-unifios/server-unifios-rotate-psk
 grep -Fq server-unifios-rotate-psk cron/daily.d/server-unifios-update
 test -x "$package_dir/usr/lib/iserv/server-unifios/server-unifios-rotate-psk"
+grep -Fqx 'chmod 0644 "$TARGET_DIR/index.html"' lib/server-unifios/render_wlan_psk
+grep -Fqx '  add_header Cache-Control "no-store" always;' \
+  iconf/etc/nginx/server-iserv/41server-unifios_psk.sh
+grep -Fqx '  unset rotate name access_mode access_value' \
+  iconf/etc/nginx/server-iserv/41server-unifios_psk.sh
+grep -Fqx '  [ "${rotate:-false}" = true ] || continue' \
+  iconf/etc/nginx/server-iserv/41server-unifios_psk.sh
+grep -Fqx '| `rotate` | yes | Set to `true` to rotate the profile automatically each day. |' README.md
+grep -Fqx 'rotate=true' psk-profiles.d/guest.env.example
 
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
