@@ -1,0 +1,66 @@
+#!/bin/sh
+set -eu
+
+case "${1:-}" in
+  '') [ "$#" -eq 0 ] || exit 2 ;;
+  --repair) [ "$#" -eq 1 ] || exit 2 ;;
+  *) echo 'Usage: server-unifios-application-updates [--repair]' >&2; exit 2 ;;
+esac
+
+# Core's internal API can issue short-lived tokens for local administration.
+# Keep credentials inside the container and off process command lines.
+docker exec -i unifi-os-server python3 - "$@" <<'PY'
+import json
+import ssl
+import sys
+from urllib.request import Request, urlopen
+
+INTERNAL = 'http://127.0.0.1:11081/api'
+PUBLIC = 'https://127.0.0.1/api'
+
+
+def request(base, path, data=None, method=None, headers=None):
+    headers = {'Content-Type': 'application/json', **(headers or {})}
+    body = json.dumps(data).encode() if data is not None else None
+    req = Request(base + path, data=body, method=method, headers=headers)
+    # The request stays on container loopback; its certificate names the host.
+    with urlopen(req, timeout=30, context=ssl._create_unverified_context()) as response:
+        content = response.read()
+        return json.loads(content) if content else None
+
+
+applications = request(INTERNAL, '/applications')
+schedules = {
+    app['name']: {'frequency': 'daily', 'hour': (app.get('updateSchedule') or {}).get('hour', 2)}
+    for app in applications if app.get('isInstalled') is True
+}
+if not schedules:
+    raise SystemExit(0)
+users = request(INTERNAL, '/users')
+owner = next(user for user in users if user.get('role') == 'owner')
+auth = request(INTERNAL, '/authToken', {'userId': owner['id'], 'expiresInSec': 60})
+headers = {
+    'Cookie': auth['tokenCookieName'] + '=' + auth['token'],
+    'X-CSRF-Token': auth['csrfToken'],
+}
+def uses_application_schedules():
+    system = request(PUBLIC, '/system', headers=headers)
+    return system['firmware']['autoUpdate']['includeApplications'] is False
+
+
+if '--repair' not in sys.argv[1:]:
+    valid = all(
+        app.get('updateSchedule') == schedules[app['name']]
+        for app in applications if app.get('isInstalled') is True
+    )
+    raise SystemExit(0 if valid and uses_application_schedules() else 1)
+
+request(PUBLIC, '/system/updates/schedules', {
+    'useApplicationSchedules': True,
+    'schedules': schedules,
+}, method='PATCH', headers=headers)
+updated = {app['name']: app.get('updateSchedule') for app in request(INTERNAL, '/applications')}
+if any(updated.get(name) != schedule for name, schedule in schedules.items()) or not uses_application_schedules():
+    raise SystemExit('UniFi application update schedule verification failed')
+print('Daily application updates configured for: ' + ', '.join(sorted(schedules)))
+PY

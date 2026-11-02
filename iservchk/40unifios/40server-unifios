@@ -59,3 +59,9 @@ Test "create PSK profile directories"
   done
 
 Start iserv-server-unifios
+
+Test "enable daily application updates"
+  /usr/lib/iserv/server-unifios/server-unifios-application-updates
+  ---
+  /usr/lib/iserv/server-unifios/server-unifios-application-updates --repair
+

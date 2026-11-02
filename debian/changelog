@@ -1,6 +1,8 @@
 stsbl-iserv-server-unifios (26.11.02.1) UNRELEASED; urgency=medium
 
   * Preserve the running UniFi container when the daily image pull is unchanged
+  * Configure daily updates for all installed UniFi OS applications
+  * Allow configuring generated PSK lengths per WLAN profile
 
  -- Felix Jacobi <Felix@jacobi-hamburg.net>  Mon, 02 Nov 2026 17:20:00 +0100
 

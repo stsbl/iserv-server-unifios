@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
-NEWPSK="${NEWPSK:-$(pwgen 58 1)}"
+PSK_LENGTH=${PSK_LENGTH:-58}
+case "$PSK_LENGTH" in
+  [8-9]|[1-5][0-9]|6[0-3]) ;;
+  *) echo 'PSK length must be an integer between 8 and 63' >&2; exit 2 ;;
+esac
+NEWPSK="${NEWPSK:-$(pwgen "$PSK_LENGTH" 1)}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SET_PSK_COMMAND="${SET_PSK_COMMAND:-set-unifi-psk}"
 PSK_STATE_FILE=${PSK_STATE_FILE:?PSK state file missing}

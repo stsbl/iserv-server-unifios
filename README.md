@@ -56,6 +56,19 @@ its Network application supports the persistent database version: application
 upgrades installed inside the container are lost during recreation, while the
 database is retained.
 
+After starting the container, `iservchk` checks that every installed UniFi OS
+application has daily updates enabled and repairs differing settings using the
+Core settings API. It preserves
+each application's update hour, defaulting to 02:00 for applications without a
+schedule, and verifies the resulting settings. Firmware's own update schedule
+is retained. The helper uses a local administrative token valid for 60 seconds;
+it does not require stored login credentials or restart Core. The helper checks
+settings by default; use `--repair` to apply them manually:
+
+```sh
+/usr/lib/iserv/server-unifios/server-unifios-application-updates --repair
+```
+
 ## WLAN PSK profiles
 
 Profile definitions are root-only shell environment files in:
@@ -81,6 +94,7 @@ Each profile supports the following fields:
 | `name` | yes | Output directory name below `psk/`; use letters, digits, `_` and `-`. |
 | `site` | yes | UniFi site, usually `default`. |
 | `wlan_name` | yes | Exact UniFi WLAN name to update. |
+| `psk_length` | no | Length of newly generated PSKs, from 8 to 63 characters; defaults to 58. Existing saved keys are retained until rotation. |
 | `api_key` | one auth method | Preferred UniFi API key; keep it only in this mode-0600 file. |
 | `username` / `password` | one auth method | Alternative UniFi login when `api_key` is empty; both fields are required together. |
 | `base_url` | no | UniFi controller URL; defaults to `https://$(hostname -f)`. |
@@ -139,6 +153,8 @@ sh -n cron/daily.d/server-unifios-update lib/server-unifios/server-unifios-rotat
 bash -n lib/server-unifios/unifi-set-psk lib/server-unifios/rotate_wlan_psk
 sh -n cron/daily.d/server-unifios-reboot-aps
 python3 tests/daily-update.py
+python3 tests/application-updates.py
+python3 tests/psk-length.py
 bash -n lib/server-unifios/server-unifios-reboot-aps
 HOST=unifi.example.invalid docker compose -f docker/docker-compose.yaml config
 dpkg-buildpackage -us -uc -b
