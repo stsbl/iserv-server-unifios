@@ -4,5 +4,13 @@ set -eu
 cd /usr/share/iserv/server-unifios/docker/unifi-os-server
 . /var/lib/iserv/server-unifios/docker-compose.env
 /usr/bin/docker compose pull --quiet
-/bin/systemctl restart iserv-server-unifios.service
+
+# Pulling an unchanged image must not discard application upgrades installed
+# inside the running container. Only recreate it for an actual image change.
+current_image=$(/usr/bin/docker inspect --format '{{.Image}}' unifi-os-server)
+image_ref=$(/usr/bin/docker inspect --format '{{.Config.Image}}' unifi-os-server)
+available_image=$(/usr/bin/docker image inspect --format '{{.Id}}' "$image_ref")
+if [ "$current_image" != "$available_image" ]; then
+  /bin/systemctl restart iserv-server-unifios.service
+fi
 /usr/lib/iserv/server-unifios/server-unifios-rotate-psk

@@ -1,0 +1,6 @@
+---
+text: "Der UniFi-Controller wird beim täglichen Update nur noch neu gestartet, wenn sich das Container-Image geändert hat."
+audience: admins
+type: fixed
+urgency: medium
+highlight: false

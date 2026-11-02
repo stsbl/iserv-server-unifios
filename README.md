@@ -46,8 +46,15 @@ profile.  A profile using `access_mode=cidr` is protected by its own CIDR
 allowlist; no PSK directories or locations are hard-coded in the package.
 
 The daily IServ cron job pulls `ghcr.io/lemker/unifi-os-server:latest` and
-runs Compose reconciliation. A new image may therefore recreate the controller
-during that run.
+restarts the Compose service only if the pulled image differs from the
+container's image. An unchanged image leaves the controller and application
+upgrades installed inside it running. A failed pull or image inspection aborts
+the job without restarting the service.
+
+A new image still recreates the controller. Before deploying an image, ensure
+its Network application supports the persistent database version: application
+upgrades installed inside the container are lost during recreation, while the
+database is retained.
 
 ## WLAN PSK profiles
 
@@ -131,6 +138,7 @@ Useful local checks:
 sh -n cron/daily.d/server-unifios-update lib/server-unifios/server-unifios-rotate-psk
 bash -n lib/server-unifios/unifi-set-psk lib/server-unifios/rotate_wlan_psk
 sh -n cron/daily.d/server-unifios-reboot-aps
+python3 tests/daily-update.py
 bash -n lib/server-unifios/server-unifios-reboot-aps
 HOST=unifi.example.invalid docker compose -f docker/docker-compose.yaml config
 dpkg-buildpackage -us -uc -b

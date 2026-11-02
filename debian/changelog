@@ -1,3 +1,9 @@
+stsbl-iserv-server-unifios (26.11.02.1) UNRELEASED; urgency=medium
+
+  * Preserve the running UniFi container when the daily image pull is unchanged
+
+ -- Felix Jacobi <Felix@jacobi-hamburg.net>  Mon, 02 Nov 2026 17:20:00 +0100
+
 stsbl-iserv-server-unifios (26.07.13.3) stable; urgency=medium
 
   * Automate PSK profile rotation
